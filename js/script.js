@@ -166,17 +166,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const iconPause = document.getElementById('iconPause');
     let playing = false;
     let audioCtx = null;
-    let pianoTimeout = null;
-    let pianoTimeouts = [];
+    let masterGain = null;
+    let loopTimer = null;
 
-    const noteFreqs = {
-        'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
-        'G4': 392.00, 'A4': 440.00, 'Bb4': 466.16, 'B4': 493.88,
-        'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46,
-        'G5': 783.99
+    const NOTES = {
+        'C4':261.63,'D4':293.66,'E4':329.63,'F4':349.23,
+        'G4':392.00,'A4':440.00,'Bb4':466.16,
+        'C5':523.25,'D5':587.33,'E5':659.25,'F5':698.46,'G5':783.99
     };
 
-    // Happy Birthday melody with timing (note, duration in beats)
     const melody = [
         ['C4',0.75],['C4',0.25],['D4',1],['C4',1],['F4',1],['E4',2],
         ['C4',0.75],['C4',0.25],['D4',1],['C4',1],['G4',1],['F4',2],
@@ -184,79 +182,98 @@ document.addEventListener('DOMContentLoaded', () => {
         ['Bb4',0.75],['Bb4',0.25],['A4',1],['F4',1],['G4',1],['F4',2],
     ];
 
-    function playPianoNote(ctx, freq, startTime, duration) {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-
-        // Main tone (sine for soft piano-like sound)
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, startTime);
-        gain.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.15, startTime + duration * 0.3);
-        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration * 0.95);
-        gain.gain.setValueAtTime(0, startTime + duration);
-
-        // Soft harmonic for warmth
-        osc2.type = 'sine';
-        osc2.frequency.value = freq * 2;
-        gain2.gain.setValueAtTime(0, startTime);
-        gain2.gain.linearRampToValueAtTime(0.06, startTime + 0.01);
-        gain2.gain.exponentialRampToValueAtTime(0.001, startTime + duration * 0.6);
-        gain2.gain.setValueAtTime(0, startTime + duration);
-
-        osc.connect(gain).connect(ctx.destination);
-        osc2.connect(gain2).connect(ctx.destination);
-
-        osc.start(startTime);
-        osc.stop(startTime + duration);
-        osc2.start(startTime);
-        osc2.stop(startTime + duration);
+    function initAudio() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.7;
+        masterGain.connect(audioCtx.destination);
     }
 
-    function playHappyBirthday() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const bpm = 110;
-        const beatDur = 60 / bpm;
-        let time = audioCtx.currentTime + 0.1;
+    function pianoNote(freq, start, dur) {
+        const t = start;
+        const end = t + dur;
+
+        // Fundamental
+        const o1 = audioCtx.createOscillator();
+        const g1 = audioCtx.createGain();
+        o1.type = 'sine';
+        o1.frequency.value = freq;
+        g1.gain.setValueAtTime(0.001, t);
+        g1.gain.linearRampToValueAtTime(0.4, t + 0.008);
+        g1.gain.exponentialRampToValueAtTime(0.2, t + dur * 0.2);
+        g1.gain.exponentialRampToValueAtTime(0.01, end);
+        o1.connect(g1).connect(masterGain);
+        o1.start(t);
+        o1.stop(end + 0.05);
+
+        // 2nd harmonic
+        const o2 = audioCtx.createOscillator();
+        const g2 = audioCtx.createGain();
+        o2.type = 'sine';
+        o2.frequency.value = freq * 2;
+        g2.gain.setValueAtTime(0.001, t);
+        g2.gain.linearRampToValueAtTime(0.12, t + 0.005);
+        g2.gain.exponentialRampToValueAtTime(0.01, t + dur * 0.4);
+        o2.connect(g2).connect(masterGain);
+        o2.start(t);
+        o2.stop(end + 0.05);
+
+        // 3rd harmonic (adds brightness)
+        const o3 = audioCtx.createOscillator();
+        const g3 = audioCtx.createGain();
+        o3.type = 'sine';
+        o3.frequency.value = freq * 3;
+        g3.gain.setValueAtTime(0.001, t);
+        g3.gain.linearRampToValueAtTime(0.04, t + 0.003);
+        g3.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.25);
+        o3.connect(g3).connect(masterGain);
+        o3.start(t);
+        o3.stop(end + 0.05);
+    }
+
+    function scheduleMelody() {
+        const bpm = 100;
+        const beat = 60 / bpm;
+        let t = audioCtx.currentTime + 0.15;
 
         melody.forEach(([note, beats]) => {
-            const dur = beats * beatDur;
-            playPianoNote(audioCtx, noteFreqs[note], time, dur * 0.9);
-            time += dur;
+            const dur = beats * beat;
+            pianoNote(NOTES[note], t, dur * 0.85);
+            t += dur;
         });
 
-        const totalDur = melody.reduce((sum, [, b]) => sum + b, 0) * beatDur;
-        pianoTimeout = setTimeout(() => {
-            if (playing) playHappyBirthday();
-        }, totalDur * 1000 + 500);
-        pianoTimeouts.push(pianoTimeout);
+        const total = melody.reduce((s, [, b]) => s + b, 0) * beat;
+        loopTimer = setTimeout(() => {
+            if (playing) scheduleMelody();
+        }, (total + 0.8) * 1000);
     }
 
-    function stopPiano() {
-        pianoTimeouts.forEach(t => clearTimeout(t));
-        pianoTimeouts = [];
-        if (audioCtx) {
-            audioCtx.close();
-            audioCtx = null;
-        }
+    function startMusic() {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        playing = true;
+        scheduleMelody();
+        musicBtn.classList.add('playing');
+        iconPlay.style.display = 'none';
+        iconPause.style.display = '';
+    }
+
+    function stopMusic() {
+        playing = false;
+        if (loopTimer) clearTimeout(loopTimer);
+        loopTimer = null;
+        musicBtn.classList.remove('playing');
+        iconPlay.style.display = '';
+        iconPause.style.display = 'none';
     }
 
     musicBtn.addEventListener('click', () => {
         if (playing) {
-            stopPiano();
-            musicBtn.classList.remove('playing');
-            iconPlay.style.display = '';
-            iconPause.style.display = 'none';
+            stopMusic();
         } else {
-            playHappyBirthday();
-            musicBtn.classList.add('playing');
-            iconPlay.style.display = 'none';
-            iconPause.style.display = '';
+            startMusic();
         }
-        playing = !playing;
     });
 
     // ==================== SCROLL REVEAL ====================
