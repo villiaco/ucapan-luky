@@ -160,22 +160,98 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(drawConfetti);
     }
 
-    // ==================== MUSIC ====================
+    // ==================== PIANO HAPPY BIRTHDAY (Web Audio API) ====================
     const musicBtn = document.getElementById('musicBtn');
-    const bgMusic = document.getElementById('bgMusic');
     const iconPlay = document.getElementById('iconPlay');
     const iconPause = document.getElementById('iconPause');
     let playing = false;
+    let audioCtx = null;
+    let pianoTimeout = null;
+    let pianoTimeouts = [];
+
+    const noteFreqs = {
+        'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+        'G4': 392.00, 'A4': 440.00, 'Bb4': 466.16, 'B4': 493.88,
+        'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46,
+        'G5': 783.99
+    };
+
+    // Happy Birthday melody with timing (note, duration in beats)
+    const melody = [
+        ['C4',0.75],['C4',0.25],['D4',1],['C4',1],['F4',1],['E4',2],
+        ['C4',0.75],['C4',0.25],['D4',1],['C4',1],['G4',1],['F4',2],
+        ['C4',0.75],['C4',0.25],['C5',1],['A4',1],['F4',1],['E4',1],['D4',2],
+        ['Bb4',0.75],['Bb4',0.25],['A4',1],['F4',1],['G4',1],['F4',2],
+    ];
+
+    function playPianoNote(ctx, freq, startTime, duration) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+
+        // Main tone (sine for soft piano-like sound)
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, startTime);
+        gain.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.15, startTime + duration * 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration * 0.95);
+        gain.gain.setValueAtTime(0, startTime + duration);
+
+        // Soft harmonic for warmth
+        osc2.type = 'sine';
+        osc2.frequency.value = freq * 2;
+        gain2.gain.setValueAtTime(0, startTime);
+        gain2.gain.linearRampToValueAtTime(0.06, startTime + 0.01);
+        gain2.gain.exponentialRampToValueAtTime(0.001, startTime + duration * 0.6);
+        gain2.gain.setValueAtTime(0, startTime + duration);
+
+        osc.connect(gain).connect(ctx.destination);
+        osc2.connect(gain2).connect(ctx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+        osc2.start(startTime);
+        osc2.stop(startTime + duration);
+    }
+
+    function playHappyBirthday() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bpm = 110;
+        const beatDur = 60 / bpm;
+        let time = audioCtx.currentTime + 0.1;
+
+        melody.forEach(([note, beats]) => {
+            const dur = beats * beatDur;
+            playPianoNote(audioCtx, noteFreqs[note], time, dur * 0.9);
+            time += dur;
+        });
+
+        const totalDur = melody.reduce((sum, [, b]) => sum + b, 0) * beatDur;
+        pianoTimeout = setTimeout(() => {
+            if (playing) playHappyBirthday();
+        }, totalDur * 1000 + 500);
+        pianoTimeouts.push(pianoTimeout);
+    }
+
+    function stopPiano() {
+        pianoTimeouts.forEach(t => clearTimeout(t));
+        pianoTimeouts = [];
+        if (audioCtx) {
+            audioCtx.close();
+            audioCtx = null;
+        }
+    }
 
     musicBtn.addEventListener('click', () => {
         if (playing) {
-            bgMusic.pause();
+            stopPiano();
             musicBtn.classList.remove('playing');
             iconPlay.style.display = '';
             iconPause.style.display = 'none';
         } else {
-            bgMusic.volume = 0.4;
-            bgMusic.play().catch(() => {});
+            playHappyBirthday();
             musicBtn.classList.add('playing');
             iconPlay.style.display = 'none';
             iconPause.style.display = '';

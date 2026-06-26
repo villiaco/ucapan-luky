@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,9 +25,7 @@
             <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
         </svg>
     </button>
-    <audio id="bgMusic" loop>
-        <source src="music/song.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Music is generated via Web Audio API (piano Happy Birthday) -->
 
     <!-- ==================== INTRO OVERLAY ==================== -->
     <div class="intro-overlay" id="introOverlay">
@@ -55,7 +53,7 @@
 
             <div class="hero-inner">
                 <div class="hero-ornament-top">&#10022; &#10022; &#10022;</div>
-                <p class="hero-pre">untuk seseorang yang paling istimewa</p>
+                <p class="hero-pre">for someone truly special in my life</p>
                 <h1 class="hero-heading">
                     <span class="hero-line1">Happy Birthday</span>
                     <span class="hero-name">Luky</span>
@@ -82,35 +80,35 @@
             <div class="section-header reveal">
                 <div class="section-ornament">&#10045;</div>
                 <h2 class="section-title">Counting Down</h2>
-                <p class="section-sub">menghitung setiap detik menuju hari spesialmu</p>
+                <p class="section-sub">every second closer to your special day</p>
             </div>
 
             <div class="countdown-grid reveal" id="countdownWrapper">
                 <div class="cd-card">
                     <span class="cd-num" id="days">00</span>
-                    <span class="cd-label">Hari</span>
+                    <span class="cd-label">Days</span>
                 </div>
                 <div class="cd-sep">:</div>
                 <div class="cd-card">
                     <span class="cd-num" id="hours">00</span>
-                    <span class="cd-label">Jam</span>
+                    <span class="cd-label">Hours</span>
                 </div>
                 <div class="cd-sep">:</div>
                 <div class="cd-card">
                     <span class="cd-num" id="minutes">00</span>
-                    <span class="cd-label">Menit</span>
+                    <span class="cd-label">Mins</span>
                 </div>
                 <div class="cd-sep">:</div>
                 <div class="cd-card">
                     <span class="cd-num" id="seconds">00</span>
-                    <span class="cd-label">Detik</span>
+                    <span class="cd-label">Secs</span>
                 </div>
             </div>
 
             <div class="birthday-arrived" id="birthdayArrived" style="display:none;">
                 <div class="arrived-sparkle">&#10022;</div>
                 <h2 class="arrived-title">It's Your Day!</h2>
-                <p class="arrived-sub">Selamat ulang tahun, sayangku</p>
+                <p class="arrived-sub">Happy Birthday, my love</p>
             </div>
         </div>
     </section>
@@ -121,7 +119,7 @@
             <div class="section-header reveal">
                 <div class="section-ornament">&#10045;</div>
                 <h2 class="section-title">A Letter For You</h2>
-                <p class="section-sub">dari hati yang selalu merindukanmu</p>
+                <p class="section-sub">from a heart that always misses you</p>
             </div>
 
             <div class="letter-envelope reveal">
@@ -161,39 +159,39 @@
             <div class="section-header reveal">
                 <div class="section-ornament">&#10045;</div>
                 <h2 class="section-title">Our Moments</h2>
-                <p class="section-sub">momen-momen terindah yang kita lalui bersama</p>
+                <p class="section-sub">the most beautiful moments we've shared together</p>
             </div>
 
             <div class="gallery-mosaic reveal">
                 <!--
-                    CARA MENAMBAHKAN FOTO:
-                    1. Taruh file foto di folder img/
-                    2. Ganti <div class="gallery-placeholder">...</div>
-                       menjadi <img src="img/namafoto.jpg" alt="caption">
+                    HOW TO ADD PHOTOS:
+                    1. Put your photo files in the img/ folder
+                    2. Replace <div class="gallery-placeholder">...</div>
+                       with <img src="img/yourphoto.jpg" alt="caption">
                 -->
-                <div class="gallery-card" data-caption="Momen indah kita">
+                <div class="gallery-card" data-caption="Our beautiful moments">
                     <div class="gallery-placeholder"><span>+</span></div>
-                    <div class="gallery-overlay"><p>Momen indah kita</p></div>
+                    <div class="gallery-overlay"><p>Our beautiful moments</p></div>
                 </div>
-                <div class="gallery-card" data-caption="Selalu bersamamu">
+                <div class="gallery-card" data-caption="Always with you">
                     <div class="gallery-placeholder"><span>+</span></div>
-                    <div class="gallery-overlay"><p>Selalu bersamamu</p></div>
+                    <div class="gallery-overlay"><p>Always with you</p></div>
                 </div>
-                <div class="gallery-card" data-caption="Kamu segalanya">
+                <div class="gallery-card" data-caption="You mean everything">
                     <div class="gallery-placeholder"><span>+</span></div>
-                    <div class="gallery-overlay"><p>Kamu segalanya</p></div>
+                    <div class="gallery-overlay"><p>You mean everything</p></div>
                 </div>
-                <div class="gallery-card" data-caption="Cinta kita abadi">
+                <div class="gallery-card" data-caption="Our love is forever">
                     <div class="gallery-placeholder"><span>+</span></div>
-                    <div class="gallery-overlay"><p>Cinta kita abadi</p></div>
+                    <div class="gallery-overlay"><p>Our love is forever</p></div>
                 </div>
-                <div class="gallery-card" data-caption="Rindu selalu">
+                <div class="gallery-card" data-caption="Missing you always">
                     <div class="gallery-placeholder"><span>+</span></div>
-                    <div class="gallery-overlay"><p>Rindu selalu</p></div>
+                    <div class="gallery-overlay"><p>Missing you always</p></div>
                 </div>
-                <div class="gallery-card" data-caption="Bahagia bersamamu">
+                <div class="gallery-card" data-caption="Happiest with you">
                     <div class="gallery-placeholder"><span>+</span></div>
-                    <div class="gallery-overlay"><p>Bahagia bersamamu</p></div>
+                    <div class="gallery-overlay"><p>Happiest with you</p></div>
                 </div>
             </div>
         </div>
@@ -212,7 +210,7 @@
             <div class="closing-wrap reveal">
                 <div class="closing-ornament">&#10045;</div>
                 <div class="closing-heart-beat">&#10084;</div>
-                <h2 class="closing-heading">Sampai Kita<br>Bertemu Lagi</h2>
+                <h2 class="closing-heading">Until We<br>Meet Again</h2>
                 <div class="closing-divider">
                     <span class="divider-line"></span>
                     <span class="divider-diamond">&#9830;</span>
