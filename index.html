@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Luky!</title>
+    <meta name="description" content="A special birthday wish for someone special">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=Josefin+Sans:wght@200;300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Ambient Particles -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Music Player -->
+    <button class="music-toggle" id="musicBtn" aria-label="Toggle music">
+        <svg class="music-icon-play" id="iconPlay" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+        <svg class="music-icon-pause" id="iconPause" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none">
+            <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+        </svg>
+    </button>
+    <audio id="bgMusic" loop>
+        <source src="music/song.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ==================== INTRO OVERLAY ==================== -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-content">
+            <div class="intro-ornament">&#10045;</div>
+            <p class="intro-label">A Special Day For</p>
+            <h1 class="intro-name">Luky</h1>
+            <div class="intro-line"></div>
+            <button class="intro-btn" id="introBtn">
+                <span>Open</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== HERO ==================== -->
+    <main id="mainContent" style="opacity:0; pointer-events:none;">
+
+    <section class="hero" id="hero">
+        <div class="hero-frame">
+            <div class="ornament-corner top-left"></div>
+            <div class="ornament-corner top-right"></div>
+            <div class="ornament-corner bottom-left"></div>
+            <div class="ornament-corner bottom-right"></div>
+
+            <div class="hero-inner">
+                <div class="hero-ornament-top">&#10022; &#10022; &#10022;</div>
+                <p class="hero-pre">untuk seseorang yang paling istimewa</p>
+                <h1 class="hero-heading">
+                    <span class="hero-line1">Happy Birthday</span>
+                    <span class="hero-name">Luky</span>
+                </h1>
+                <div class="hero-divider">
+                    <span class="divider-line"></span>
+                    <span class="divider-diamond">&#9830;</span>
+                    <span class="divider-line"></span>
+                </div>
+                <p class="hero-date">28 &bull; 06 &bull; 2026</p>
+                <div class="hero-ornament-bottom">&#10045;</div>
+            </div>
+        </div>
+
+        <a href="#countdown" class="scroll-cue">
+            <span class="scroll-text">Scroll</span>
+            <span class="scroll-line"></span>
+        </a>
+    </section>
+
+    <!-- ==================== COUNTDOWN ==================== -->
+    <section class="section" id="countdown">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-ornament">&#10045;</div>
+                <h2 class="section-title">Counting Down</h2>
+                <p class="section-sub">menghitung setiap detik menuju hari spesialmu</p>
+            </div>
+
+            <div class="countdown-grid reveal" id="countdownWrapper">
+                <div class="cd-card">
+                    <span class="cd-num" id="days">00</span>
+                    <span class="cd-label">Hari</span>
+                </div>
+                <div class="cd-sep">:</div>
+                <div class="cd-card">
+                    <span class="cd-num" id="hours">00</span>
+                    <span class="cd-label">Jam</span>
+                </div>
+                <div class="cd-sep">:</div>
+                <div class="cd-card">
+                    <span class="cd-num" id="minutes">00</span>
+                    <span class="cd-label">Menit</span>
+                </div>
+                <div class="cd-sep">:</div>
+                <div class="cd-card">
+                    <span class="cd-num" id="seconds">00</span>
+                    <span class="cd-label">Detik</span>
+                </div>
+            </div>
+
+            <div class="birthday-arrived" id="birthdayArrived" style="display:none;">
+                <div class="arrived-sparkle">&#10022;</div>
+                <h2 class="arrived-title">It's Your Day!</h2>
+                <p class="arrived-sub">Selamat ulang tahun, sayangku</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== LOVE LETTER ==================== -->
+    <section class="section section-alt" id="letter">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-ornament">&#10045;</div>
+                <h2 class="section-title">A Letter For You</h2>
+                <p class="section-sub">dari hati yang selalu merindukanmu</p>
+            </div>
+
+            <div class="letter-envelope reveal">
+                <div class="letter-paper">
+                    <div class="letter-border"></div>
+                    <div class="letter-body">
+                        <p class="letter-dear">My Dearest Luky,</p>
+
+                        <p>Selamat ulang tahun, sayangku. Hari ini adalah hari di mana dunia mendapatkan seseorang yang luar biasa &mdash; dan aku sangat bersyukur bahwa orang itu adalah kamu.</p>
+
+                        <p>Meskipun jarak memisahkan kita, percayalah bahwa hatiku selalu ada di sisimu. Setiap pagi aku bangun dengan memikirkanmu, dan setiap malam aku tertidur dengan berharap bisa memelukmu.</p>
+
+                        <p>Kamu adalah alasan di balik senyumku, motivasi di balik semangatku, dan kebahagiaan terbesar dalam hidupku. Aku mungkin tidak bisa ada di sana untuk meniup lilin bersamamu, tapi aku mengirimkan semua cinta dan doa terbaikku untukmu.</p>
+
+                        <p>Semoga tahun ini membawamu lebih banyak kebahagiaan, kesuksesan, dan kenangan indah. Dan semoga suatu hari nanti, jarak ini tidak lagi memisahkan kita.</p>
+
+                        <p>Aku mencintaimu lebih dari kata-kata yang bisa menggambarkannya.</p>
+
+                        <p class="letter-sign">
+                            Selalu milikmu,<br>
+                            <span class="letter-script">With All My Love</span>
+                        </p>
+                    </div>
+                    <div class="letter-seal">&#10084;</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== GALLERY ==================== -->
+    <section class="section" id="gallery">
+        <div class="container">
+            <div class="section-header reveal">
+                <div class="section-ornament">&#10045;</div>
+                <h2 class="section-title">Our Moments</h2>
+                <p class="section-sub">momen-momen terindah yang kita lalui bersama</p>
+            </div>
+
+            <div class="gallery-mosaic reveal">
+                <!--
+                    CARA MENAMBAHKAN FOTO:
+                    1. Taruh file foto di folder img/
+                    2. Ganti <div class="gallery-placeholder">...</div>
+                       menjadi <img src="img/namafoto.jpg" alt="caption">
+                -->
+                <div class="gallery-card" data-caption="Momen indah kita">
+                    <div class="gallery-placeholder"><span>+</span></div>
+                    <div class="gallery-overlay"><p>Momen indah kita</p></div>
+                </div>
+                <div class="gallery-card" data-caption="Selalu bersamamu">
+                    <div class="gallery-placeholder"><span>+</span></div>
+                    <div class="gallery-overlay"><p>Selalu bersamamu</p></div>
+                </div>
+                <div class="gallery-card" data-caption="Kamu segalanya">
+                    <div class="gallery-placeholder"><span>+</span></div>
+                    <div class="gallery-overlay"><p>Kamu segalanya</p></div>
+                </div>
+                <div class="gallery-card" data-caption="Cinta kita abadi">
+                    <div class="gallery-placeholder"><span>+</span></div>
+                    <div class="gallery-overlay"><p>Cinta kita abadi</p></div>
+                </div>
+                <div class="gallery-card" data-caption="Rindu selalu">
+                    <div class="gallery-placeholder"><span>+</span></div>
+                    <div class="gallery-overlay"><p>Rindu selalu</p></div>
+                </div>
+                <div class="gallery-card" data-caption="Bahagia bersamamu">
+                    <div class="gallery-placeholder"><span>+</span></div>
+                    <div class="gallery-overlay"><p>Bahagia bersamamu</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lb-close" id="lightboxClose">&times;</button>
+        <img src="" alt="" id="lightboxImg">
+        <p class="lb-caption" id="lightboxCaption"></p>
+    </div>
+
+    <!-- ==================== CLOSING ==================== -->
+    <section class="section section-closing" id="closing">
+        <div class="container">
+            <div class="closing-wrap reveal">
+                <div class="closing-ornament">&#10045;</div>
+                <div class="closing-heart-beat">&#10084;</div>
+                <h2 class="closing-heading">Sampai Kita<br>Bertemu Lagi</h2>
+                <div class="closing-divider">
+                    <span class="divider-line"></span>
+                    <span class="divider-diamond">&#9830;</span>
+                    <span class="divider-line"></span>
+                </div>
+                <p class="closing-msg">
+                    Jarak hanyalah angka, tapi cinta kita tidak terbatas.<br>
+                    Selamat ulang tahun, cintaku.<br>
+                    Aku selalu ada untukmu &mdash; hari ini, besok, dan selamanya.
+                </p>
+                <div class="closing-hearts">
+                    <span>&#10084;</span><span>&#10084;</span><span>&#10084;</span>
+                </div>
+                <p class="closing-footer">made with love, just for you</p>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
