@@ -59,26 +59,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     animateParticles();
 
-    // ==================== EMOJI RAIN ====================
-    const emojiRain = document.getElementById('emojiRain');
-    const emojis = ['💖','🎂','🎁','🎈','🌸','✨','💕','🎉','🥳','💗','🎀','⭐'];
+    // ==================== SPARKLE TRAIL + TAP EMOJI POP ====================
+    const fxLayer = document.getElementById('fxLayer');
+    const sparkleChars = ['✨','⭐','💫','✦','·'];
+    const tapEmojis = ['💖','🎂','✨','🎁','💕','🌸','🎈','🥳','💗','🎀','⭐','🎉'];
+    let lastSparkle = 0;
 
-    function spawnEmoji() {
-        const el = document.createElement('div');
-        el.classList.add('emoji-drop');
-        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        el.style.left = Math.random() * 100 + '%';
-        el.style.setProperty('--fall-dur', (Math.random() * 6 + 5) + 's');
-        el.style.setProperty('--fall-delay', '0s');
-        el.style.setProperty('--emoji-size', (Math.random() * 14 + 14) + 'px');
-        emojiRain.appendChild(el);
-        setTimeout(() => el.remove(), 12000);
+    function createSparkle(x, y) {
+        const now = Date.now();
+        if (now - lastSparkle < 40) return;
+        lastSparkle = now;
+
+        for (let i = 0; i < 3; i++) {
+            const el = document.createElement('div');
+            el.classList.add('sparkle');
+            el.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+            el.style.left = (x + (Math.random() - 0.5) * 30) + 'px';
+            el.style.top = (y + (Math.random() - 0.5) * 30) + 'px';
+            el.style.setProperty('--sp-size', (Math.random() * 10 + 8) + 'px');
+            el.style.setProperty('--sp-dx', (Math.random() - 0.5) * 40 + 'px');
+            el.style.setProperty('--sp-dy', (Math.random() * -30 - 10) + 'px');
+            fxLayer.appendChild(el);
+            setTimeout(() => el.remove(), 850);
+        }
     }
 
-    setInterval(spawnEmoji, 800);
-    for (let i = 0; i < 8; i++) {
-        setTimeout(spawnEmoji, i * 300);
+    function createTapPop(x, y) {
+        const count = Math.floor(Math.random() * 2) + 2;
+        for (let i = 0; i < count; i++) {
+            const el = document.createElement('div');
+            el.classList.add('tap-emoji');
+            el.textContent = tapEmojis[Math.floor(Math.random() * tapEmojis.length)];
+            el.style.left = (x + (Math.random() - 0.5) * 50 - 14) + 'px';
+            el.style.top = (y + (Math.random() - 0.5) * 30 - 14) + 'px';
+            el.style.animationDelay = (i * 0.08) + 's';
+            fxLayer.appendChild(el);
+            setTimeout(() => el.remove(), 1100);
+        }
     }
+
+    document.addEventListener('mousemove', e => createSparkle(e.clientX, e.clientY));
+    document.addEventListener('touchmove', e => {
+        const t = e.touches[0];
+        if (t) createSparkle(t.clientX, t.clientY);
+    }, { passive: true });
+
+    document.addEventListener('click', e => createTapPop(e.clientX, e.clientY));
+    document.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        if (t) createTapPop(t.clientX, t.clientY);
+    }, { passive: true });
 
     // ==================== INTRO OVERLAY ====================
     const introOverlay = document.getElementById('introOverlay');
