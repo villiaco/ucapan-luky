@@ -723,8 +723,10 @@ body {
 }
 
 .closing-hearts span:nth-child(1) { animation-delay: 0s; }
-.closing-hearts span:nth-child(2) { animation-delay: 0.8s; }
-.closing-hearts span:nth-child(3) { animation-delay: 1.6s; }
+.closing-hearts span:nth-child(2) { animation-delay: 0.5s; }
+.closing-hearts span:nth-child(3) { animation-delay: 1s; }
+.closing-hearts span:nth-child(4) { animation-delay: 1.5s; }
+.closing-hearts span:nth-child(5) { animation-delay: 2s; }
 
 @keyframes heartDrift {
     0%, 100% { transform: translateY(0); opacity: 0.2; }
@@ -740,7 +742,75 @@ body {
     font-weight: 200;
 }
 
-/* ==================== SCROLL REVEAL ==================== */
+/* ==================== EMOJI RAIN ==================== */
+.emoji-rain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.emoji-drop {
+    position: absolute;
+    top: -50px;
+    animation: emojifall var(--fall-dur) linear infinite;
+    animation-delay: var(--fall-delay);
+    font-size: var(--emoji-size);
+    opacity: 0.6;
+}
+
+@keyframes emojifall {
+    0%   { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+}
+
+/* ==================== CUTE STICKERS ==================== */
+.sticker {
+    position: absolute;
+    z-index: 3;
+    animation: stickerBounce 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.sticker-1 {
+    top: 20px;
+    left: 20px;
+    font-size: 1.8rem;
+    animation-delay: 0s;
+}
+
+.sticker-2 {
+    top: 20px;
+    right: 20px;
+    font-size: 1.4rem;
+    animation-delay: 0.5s;
+}
+
+.sticker-3 {
+    bottom: 20px;
+    left: 20px;
+    font-size: 1.6rem;
+    animation-delay: 1s;
+}
+
+.sticker-4 {
+    bottom: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    animation-delay: 1.5s;
+}
+
+@keyframes stickerBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    25%      { transform: translateY(-8px) scale(1.1); }
+    50%      { transform: translateY(0) scale(1); }
+    75%      { transform: translateY(-4px) scale(1.05); }
+}
+
+/* ==================== SCROLL REVEAL (with fun variants) ==================== */
 .reveal {
     opacity: 0;
     transform: translateY(35px);
@@ -751,6 +821,74 @@ body {
 .reveal.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Pop-in effect for section headers */
+.section-header.reveal.visible {
+    animation: popIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes popIn {
+    0%   { opacity: 0; transform: scale(0.7) translateY(20px); }
+    60%  { transform: scale(1.05) translateY(-5px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Wiggle for countdown cards */
+.countdown-grid.reveal.visible .cd-card {
+    animation: wiggleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.countdown-grid.reveal.visible .cd-card:nth-child(1) { animation-delay: 0.1s; }
+.countdown-grid.reveal.visible .cd-card:nth-child(3) { animation-delay: 0.2s; }
+.countdown-grid.reveal.visible .cd-card:nth-child(5) { animation-delay: 0.3s; }
+.countdown-grid.reveal.visible .cd-card:nth-child(7) { animation-delay: 0.4s; }
+
+@keyframes wiggleIn {
+    0%   { opacity: 0; transform: scale(0.5) rotate(-5deg); }
+    50%  { transform: scale(1.08) rotate(3deg); }
+    75%  { transform: scale(0.98) rotate(-1deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Slide-up bounce for letter */
+.letter-envelope.reveal.visible {
+    animation: slideUpBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideUpBounce {
+    0%   { opacity: 0; transform: translateY(60px); }
+    60%  { transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger pop for gallery cards */
+.gallery-mosaic.reveal.visible .gallery-card {
+    animation: cardPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.gallery-mosaic.reveal.visible .gallery-card:nth-child(1) { animation-delay: 0.05s; }
+.gallery-mosaic.reveal.visible .gallery-card:nth-child(2) { animation-delay: 0.12s; }
+.gallery-mosaic.reveal.visible .gallery-card:nth-child(3) { animation-delay: 0.19s; }
+.gallery-mosaic.reveal.visible .gallery-card:nth-child(4) { animation-delay: 0.26s; }
+.gallery-mosaic.reveal.visible .gallery-card:nth-child(5) { animation-delay: 0.33s; }
+.gallery-mosaic.reveal.visible .gallery-card:nth-child(6) { animation-delay: 0.40s; }
+
+@keyframes cardPop {
+    0%   { opacity: 0; transform: scale(0.3); }
+    70%  { transform: scale(1.06); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Bounce for closing */
+.closing-wrap.reveal.visible {
+    animation: closingBounce 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes closingBounce {
+    0%   { opacity: 0; transform: scale(0.8) translateY(40px); }
+    50%  { transform: scale(1.03) translateY(-8px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* ==================== CONFETTI ==================== */

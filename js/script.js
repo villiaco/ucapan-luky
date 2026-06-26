@@ -59,6 +59,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     animateParticles();
 
+    // ==================== EMOJI RAIN ====================
+    const emojiRain = document.getElementById('emojiRain');
+    const emojis = ['💖','🎂','🎁','🎈','🌸','✨','💕','🎉','🥳','💗','🎀','⭐'];
+
+    function spawnEmoji() {
+        const el = document.createElement('div');
+        el.classList.add('emoji-drop');
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left = Math.random() * 100 + '%';
+        el.style.setProperty('--fall-dur', (Math.random() * 6 + 5) + 's');
+        el.style.setProperty('--fall-delay', '0s');
+        el.style.setProperty('--emoji-size', (Math.random() * 14 + 14) + 'px');
+        emojiRain.appendChild(el);
+        setTimeout(() => el.remove(), 12000);
+    }
+
+    setInterval(spawnEmoji, 800);
+    for (let i = 0; i < 8; i++) {
+        setTimeout(spawnEmoji, i * 300);
+    }
+
     // ==================== INTRO OVERLAY ====================
     const introOverlay = document.getElementById('introOverlay');
     const introBtn = document.getElementById('introBtn');
