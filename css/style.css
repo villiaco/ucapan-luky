@@ -312,6 +312,16 @@ body {
     animation: spinSlow 10s linear infinite;
 }
 
+.music-player-visible {
+    text-align: center;
+    margin-top: 32px;
+    padding: 20px;
+}
+
+.music-player-visible audio {
+    filter: sepia(0.3) saturate(0.8) brightness(0.9);
+}
+
 /* Scroll cue */
 .scroll-cue {
     position: absolute;

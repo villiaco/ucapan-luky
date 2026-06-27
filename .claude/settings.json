@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(/c/Users/USER/gh/bin/gh.exe run *)",
+      "WebFetch(domain:villiaco.github.io)",
+      "Bash(/c/Users/USER/gh/bin/gh.exe api *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

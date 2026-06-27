@@ -124,10 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             introOverlay.style.display = 'none';
         }, 900);
-
-        if (!playing) {
-            startMusic();
-        }
     });
 
     // ==================== COUNTDOWN ====================
@@ -219,19 +215,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const musicBtn = document.getElementById('musicBtn');
     const iconPlay = document.getElementById('iconPlay');
     const iconPause = document.getElementById('iconPause');
+    const bgMusic = document.getElementById('bgMusic');
     let playing = false;
-    let wantPlay = false;
-    const audioEl = document.getElementById('bgMusic');
 
-    audioEl.addEventListener('canplaythrough', function() {
-        if (wantPlay && !playing) {
-            audioEl.play().catch(function() {});
-            playing = true;
-            updateMusicUI();
-        }
-    });
-
-    function updateMusicUI() {
+    function updateMusicBtn() {
         if (playing) {
             musicBtn.classList.add('playing');
             iconPlay.style.display = 'none';
@@ -243,33 +230,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function startMusic() {
-        wantPlay = true;
-        try {
-            var p = audioEl.play();
-            if (p && p.then) {
-                p.then(function() {
-                    playing = true;
-                    updateMusicUI();
-                }).catch(function() {});
-            }
-        } catch(e) {}
-        playing = true;
-        updateMusicUI();
+    if (bgMusic) {
+        bgMusic.addEventListener('play', function() {
+            playing = true;
+            updateMusicBtn();
+        });
+        bgMusic.addEventListener('pause', function() {
+            playing = false;
+            updateMusicBtn();
+        });
     }
 
-    function stopMusic() {
-        wantPlay = false;
-        try { audioEl.pause(); } catch(e) {}
-        playing = false;
-        updateMusicUI();
-    }
-
-    musicBtn.addEventListener('click', () => {
+    musicBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (!bgMusic) return;
         if (playing) {
-            stopMusic();
+            bgMusic.pause();
         } else {
-            startMusic();
+            bgMusic.play().catch(function(){});
         }
     });
 

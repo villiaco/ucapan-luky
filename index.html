@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&family=Josefin+Sans:wght@200;300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
 
@@ -19,7 +19,6 @@
     <div class="fx-layer" id="fxLayer"></div>
 
     <!-- Music Player -->
-    <audio id="bgMusic" src="music/birthday.wav" loop preload="auto"></audio>
     <button class="music-toggle" id="musicBtn" aria-label="Toggle music">
         <svg class="music-icon-play" id="iconPlay" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M9 18V5l12-2v13"/>
@@ -74,6 +73,11 @@
                 <p class="hero-date">28 &bull; 06 &bull; 2026</p>
                 <div class="hero-ornament-bottom">&#10045;</div>
             </div>
+        </div>
+
+        <div class="music-player-visible" id="musicPlayerVisible">
+            <p style="font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">&#127925; tap play to hear the music &#127925;</p>
+            <audio id="bgMusic" src="music/birthday.wav" controls loop preload="auto" style="width:260px;height:40px;border-radius:20px;"></audio>
         </div>
 
         <a href="#countdown" class="scroll-cue">
@@ -242,6 +246,6 @@
     <!-- Confetti Canvas -->
     <canvas id="confettiCanvas"></canvas>
 
-    <script src="js/script.js"></script>
+    <script src="js/script.js?v=6"></script>
 </body>
 </html>
