@@ -215,117 +215,100 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(drawConfetti);
     }
 
-    // ==================== PIANO HAPPY BIRTHDAY (Web Audio API) ====================
+    // ==================== PIANO HAPPY BIRTHDAY (Audio Element) ====================
     const musicBtn = document.getElementById('musicBtn');
     const iconPlay = document.getElementById('iconPlay');
     const iconPause = document.getElementById('iconPause');
     let playing = false;
-    let audioCtx = null;
-    let masterGain = null;
-    let loopTimer = null;
+    let audioEl = null;
 
-    const NOTES = {
-        'C4':261.63,'D4':293.66,'E4':329.63,'F4':349.23,
-        'G4':392.00,'A4':440.00,'Bb4':466.16,
-        'C5':523.25,'D5':587.33,'E5':659.25,'F5':698.46,'G5':783.99
-    };
-
-    const melody = [
-        ['C4',0.75],['C4',0.25],['D4',1],['C4',1],['F4',1],['E4',2],
-        ['C4',0.75],['C4',0.25],['D4',1],['C4',1],['G4',1],['F4',2],
-        ['C4',0.75],['C4',0.25],['C5',1],['A4',1],['F4',1],['E4',1],['D4',2],
-        ['Bb4',0.75],['Bb4',0.25],['A4',1],['F4',1],['G4',1],['F4',2],
-    ];
-
-    function initAudio() {
-        if (audioCtx) return;
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 1.0;
-        masterGain.connect(audioCtx.destination);
-    }
-
-    function pianoNote(freq, start, dur) {
-        const t = start;
-        const end = t + dur;
-
-        // Fundamental
-        const o1 = audioCtx.createOscillator();
-        const g1 = audioCtx.createGain();
-        o1.type = 'sine';
-        o1.frequency.value = freq;
-        g1.gain.setValueAtTime(0.001, t);
-        g1.gain.linearRampToValueAtTime(0.6, t + 0.008);
-        g1.gain.exponentialRampToValueAtTime(0.35, t + dur * 0.2);
-        g1.gain.exponentialRampToValueAtTime(0.01, end);
-        o1.connect(g1).connect(masterGain);
-        o1.start(t);
-        o1.stop(end + 0.05);
-
-        // 2nd harmonic
-        const o2 = audioCtx.createOscillator();
-        const g2 = audioCtx.createGain();
-        o2.type = 'sine';
-        o2.frequency.value = freq * 2;
-        g2.gain.setValueAtTime(0.001, t);
-        g2.gain.linearRampToValueAtTime(0.2, t + 0.005);
-        g2.gain.exponentialRampToValueAtTime(0.01, t + dur * 0.4);
-        o2.connect(g2).connect(masterGain);
-        o2.start(t);
-        o2.stop(end + 0.05);
-
-        // 3rd harmonic (adds brightness)
-        const o3 = audioCtx.createOscillator();
-        const g3 = audioCtx.createGain();
-        o3.type = 'sine';
-        o3.frequency.value = freq * 3;
-        g3.gain.setValueAtTime(0.001, t);
-        g3.gain.linearRampToValueAtTime(0.08, t + 0.003);
-        g3.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.25);
-        o3.connect(g3).connect(masterGain);
-        o3.start(t);
-        o3.stop(end + 0.05);
-    }
-
-    function scheduleMelody() {
-        const bpm = 100;
+    function buildWav() {
+        const sr = 44100;
+        const bpm = 105;
         const beat = 60 / bpm;
-        let t = audioCtx.currentTime + 0.15;
+        const notes = [
+            [261.63,0.75],[261.63,0.25],[293.66,1],[261.63,1],[349.23,1],[329.63,2],
+            [261.63,0.75],[261.63,0.25],[293.66,1],[261.63,1],[392.00,1],[349.23,2],
+            [261.63,0.75],[261.63,0.25],[523.25,1],[440.00,1],[349.23,1],[329.63,1],[293.66,2],
+            [466.16,0.75],[466.16,0.25],[440.00,1],[349.23,1],[392.00,1],[349.23,2],
+        ];
 
-        melody.forEach(([note, beats]) => {
-            const dur = beats * beat;
-            pianoNote(NOTES[note], t, dur * 0.85);
-            t += dur;
+        let totalBeats = 0;
+        notes.forEach(n => totalBeats += n[1]);
+        const dur = totalBeats * beat + 0.5;
+        const len = Math.ceil(dur * sr);
+        const buf = new Float32Array(len);
+
+        let pos = 0;
+        notes.forEach(([freq, beats]) => {
+            const nd = beats * beat;
+            const ns = Math.ceil(nd * sr);
+            for (let i = 0; i < ns && pos + i < len; i++) {
+                const t = i / sr;
+                let s = Math.sin(2 * Math.PI * freq * t) * 0.45;
+                s += Math.sin(2 * Math.PI * freq * 2 * t) * 0.15;
+                s += Math.sin(2 * Math.PI * freq * 3 * t) * 0.06;
+                s += Math.sin(2 * Math.PI * freq * 4 * t) * 0.02;
+
+                let env;
+                const att = 0.008 * sr;
+                if (i < att) {
+                    env = i / att;
+                } else {
+                    env = Math.exp(-(i - att) / (sr * 0.4));
+                }
+                const rel = 0.03 * sr;
+                if (i > ns - rel) env *= (ns - i) / rel;
+
+                buf[pos + i] += s * env;
+            }
+            pos += ns;
         });
 
-        const total = melody.reduce((s, [, b]) => s + b, 0) * beat;
-        loopTimer = setTimeout(() => {
-            if (playing) scheduleMelody();
-        }, (total + 0.8) * 1000);
+        const pcm = new Int16Array(len);
+        for (let i = 0; i < len; i++) {
+            const v = Math.max(-1, Math.min(1, buf[i]));
+            pcm[i] = v < 0 ? v * 0x8000 : v * 0x7FFF;
+        }
+
+        const ab = new ArrayBuffer(44 + len * 2);
+        const dv = new DataView(ab);
+        const ws = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+        ws(0, 'RIFF');
+        dv.setUint32(4, 36 + len * 2, true);
+        ws(8, 'WAVE');
+        ws(12, 'fmt ');
+        dv.setUint32(16, 16, true);
+        dv.setUint16(20, 1, true);
+        dv.setUint16(22, 1, true);
+        dv.setUint32(24, sr, true);
+        dv.setUint32(28, sr * 2, true);
+        dv.setUint16(32, 2, true);
+        dv.setUint16(34, 16, true);
+        ws(36, 'data');
+        dv.setUint32(40, len * 2, true);
+        const out = new Int16Array(ab, 44);
+        out.set(pcm);
+
+        return new Blob([ab], { type: 'audio/wav' });
     }
 
     function startMusic() {
-        initAudio();
+        if (!audioEl) {
+            const blob = buildWav();
+            audioEl = new Audio(URL.createObjectURL(blob));
+            audioEl.loop = true;
+        }
+        audioEl.play();
         playing = true;
         musicBtn.classList.add('playing');
         iconPlay.style.display = 'none';
         iconPause.style.display = '';
-
-        const go = () => {
-            if (playing) scheduleMelody();
-        };
-
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume().then(go);
-        } else {
-            go();
-        }
     }
 
     function stopMusic() {
+        if (audioEl) audioEl.pause();
         playing = false;
-        if (loopTimer) clearTimeout(loopTimer);
-        loopTimer = null;
         musicBtn.classList.remove('playing');
         iconPlay.style.display = '';
         iconPause.style.display = 'none';
