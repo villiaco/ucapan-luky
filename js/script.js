@@ -328,14 +328,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==================== SCROLL REVEAL ====================
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-            if (e.isIntersecting) e.target.classList.add('visible');
-        });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    function setupReveal() {
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    if (e.target.classList.contains('gallery-mosaic')) {
+                        setTimeout(() => e.target.classList.add('cards-shown'), 50);
+                    }
+                }
+            });
+        }, { threshold: 0.05, rootMargin: '0px 0px 0px 0px' });
 
-    reveals.forEach(el => observer.observe(el));
+        reveals.forEach(el => observer.observe(el));
+
+        setTimeout(() => {
+            reveals.forEach(el => {
+                if (!el.classList.contains('visible')) {
+                    el.classList.add('visible');
+                    if (el.classList.contains('gallery-mosaic')) {
+                        el.classList.add('cards-shown');
+                    }
+                }
+            });
+        }, 3000);
+    }
+
+    introBtn.addEventListener('click', () => {
+        setTimeout(setupReveal, 800);
+    });
+
+    if (introOverlay.classList.contains('hide') || introOverlay.style.display === 'none') {
+        setupReveal();
+    }
 
     // ==================== GALLERY LIGHTBOX ====================
     const cards = document.querySelectorAll('.gallery-card');
