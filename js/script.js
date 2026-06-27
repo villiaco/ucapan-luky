@@ -215,99 +215,24 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(drawConfetti);
     }
 
-    // ==================== PIANO HAPPY BIRTHDAY (Audio Element) ====================
+    // ==================== PIANO HAPPY BIRTHDAY ====================
     const musicBtn = document.getElementById('musicBtn');
     const iconPlay = document.getElementById('iconPlay');
     const iconPause = document.getElementById('iconPause');
     let playing = false;
-    let audioEl = null;
-
-    function buildWav() {
-        const sr = 44100;
-        const bpm = 105;
-        const beat = 60 / bpm;
-        const notes = [
-            [261.63,0.75],[261.63,0.25],[293.66,1],[261.63,1],[349.23,1],[329.63,2],
-            [261.63,0.75],[261.63,0.25],[293.66,1],[261.63,1],[392.00,1],[349.23,2],
-            [261.63,0.75],[261.63,0.25],[523.25,1],[440.00,1],[349.23,1],[329.63,1],[293.66,2],
-            [466.16,0.75],[466.16,0.25],[440.00,1],[349.23,1],[392.00,1],[349.23,2],
-        ];
-
-        let totalBeats = 0;
-        notes.forEach(n => totalBeats += n[1]);
-        const dur = totalBeats * beat + 0.5;
-        const len = Math.ceil(dur * sr);
-        const buf = new Float32Array(len);
-
-        let pos = 0;
-        notes.forEach(([freq, beats]) => {
-            const nd = beats * beat;
-            const ns = Math.ceil(nd * sr);
-            for (let i = 0; i < ns && pos + i < len; i++) {
-                const t = i / sr;
-                let s = Math.sin(2 * Math.PI * freq * t) * 0.45;
-                s += Math.sin(2 * Math.PI * freq * 2 * t) * 0.15;
-                s += Math.sin(2 * Math.PI * freq * 3 * t) * 0.06;
-                s += Math.sin(2 * Math.PI * freq * 4 * t) * 0.02;
-
-                let env;
-                const att = 0.008 * sr;
-                if (i < att) {
-                    env = i / att;
-                } else {
-                    env = Math.exp(-(i - att) / (sr * 0.4));
-                }
-                const rel = 0.03 * sr;
-                if (i > ns - rel) env *= (ns - i) / rel;
-
-                buf[pos + i] += s * env;
-            }
-            pos += ns;
-        });
-
-        const pcm = new Int16Array(len);
-        for (let i = 0; i < len; i++) {
-            const v = Math.max(-1, Math.min(1, buf[i]));
-            pcm[i] = v < 0 ? v * 0x8000 : v * 0x7FFF;
-        }
-
-        const ab = new ArrayBuffer(44 + len * 2);
-        const dv = new DataView(ab);
-        const ws = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
-        ws(0, 'RIFF');
-        dv.setUint32(4, 36 + len * 2, true);
-        ws(8, 'WAVE');
-        ws(12, 'fmt ');
-        dv.setUint32(16, 16, true);
-        dv.setUint16(20, 1, true);
-        dv.setUint16(22, 1, true);
-        dv.setUint32(24, sr, true);
-        dv.setUint32(28, sr * 2, true);
-        dv.setUint16(32, 2, true);
-        dv.setUint16(34, 16, true);
-        ws(36, 'data');
-        dv.setUint32(40, len * 2, true);
-        const out = new Int16Array(ab, 44);
-        out.set(pcm);
-
-        return new Blob([ab], { type: 'audio/wav' });
-    }
+    const audioEl = document.getElementById('bgMusic');
 
     function startMusic() {
-        if (!audioEl) {
-            const blob = buildWav();
-            audioEl = new Audio(URL.createObjectURL(blob));
-            audioEl.loop = true;
-        }
-        audioEl.play();
-        playing = true;
-        musicBtn.classList.add('playing');
-        iconPlay.style.display = 'none';
-        iconPause.style.display = '';
+        audioEl.play().then(function() {
+            playing = true;
+            musicBtn.classList.add('playing');
+            iconPlay.style.display = 'none';
+            iconPause.style.display = '';
+        }).catch(function() {});
     }
 
     function stopMusic() {
-        if (audioEl) audioEl.pause();
+        audioEl.pause();
         playing = false;
         musicBtn.classList.remove('playing');
         iconPlay.style.display = '';
