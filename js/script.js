@@ -220,23 +220,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const iconPlay = document.getElementById('iconPlay');
     const iconPause = document.getElementById('iconPause');
     let playing = false;
+    let wantPlay = false;
     const audioEl = document.getElementById('bgMusic');
 
-    function startMusic() {
-        audioEl.play().then(function() {
+    audioEl.addEventListener('canplaythrough', function() {
+        if (wantPlay && !playing) {
+            audioEl.play().catch(function() {});
             playing = true;
+            updateMusicUI();
+        }
+    });
+
+    function updateMusicUI() {
+        if (playing) {
             musicBtn.classList.add('playing');
             iconPlay.style.display = 'none';
             iconPause.style.display = '';
-        }).catch(function() {});
+        } else {
+            musicBtn.classList.remove('playing');
+            iconPlay.style.display = '';
+            iconPause.style.display = 'none';
+        }
+    }
+
+    function startMusic() {
+        wantPlay = true;
+        try {
+            var p = audioEl.play();
+            if (p && p.then) {
+                p.then(function() {
+                    playing = true;
+                    updateMusicUI();
+                }).catch(function() {});
+            }
+        } catch(e) {}
+        playing = true;
+        updateMusicUI();
     }
 
     function stopMusic() {
-        audioEl.pause();
+        wantPlay = false;
+        try { audioEl.pause(); } catch(e) {}
         playing = false;
-        musicBtn.classList.remove('playing');
-        iconPlay.style.display = '';
-        iconPause.style.display = 'none';
+        updateMusicUI();
     }
 
     musicBtn.addEventListener('click', () => {
