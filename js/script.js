@@ -124,6 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             introOverlay.style.display = 'none';
         }, 900);
+
+        if (!playing) {
+            startMusic();
+        }
     });
 
     // ==================== COUNTDOWN ====================
