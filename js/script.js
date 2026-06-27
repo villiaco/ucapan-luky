@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.7;
+        masterGain.gain.value = 1.0;
         masterGain.connect(audioCtx.destination);
     }
 
@@ -255,8 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
         o1.type = 'sine';
         o1.frequency.value = freq;
         g1.gain.setValueAtTime(0.001, t);
-        g1.gain.linearRampToValueAtTime(0.4, t + 0.008);
-        g1.gain.exponentialRampToValueAtTime(0.2, t + dur * 0.2);
+        g1.gain.linearRampToValueAtTime(0.6, t + 0.008);
+        g1.gain.exponentialRampToValueAtTime(0.35, t + dur * 0.2);
         g1.gain.exponentialRampToValueAtTime(0.01, end);
         o1.connect(g1).connect(masterGain);
         o1.start(t);
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         o2.type = 'sine';
         o2.frequency.value = freq * 2;
         g2.gain.setValueAtTime(0.001, t);
-        g2.gain.linearRampToValueAtTime(0.12, t + 0.005);
+        g2.gain.linearRampToValueAtTime(0.2, t + 0.005);
         g2.gain.exponentialRampToValueAtTime(0.01, t + dur * 0.4);
         o2.connect(g2).connect(masterGain);
         o2.start(t);
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         o3.type = 'sine';
         o3.frequency.value = freq * 3;
         g3.gain.setValueAtTime(0.001, t);
-        g3.gain.linearRampToValueAtTime(0.04, t + 0.003);
+        g3.gain.linearRampToValueAtTime(0.08, t + 0.003);
         g3.gain.exponentialRampToValueAtTime(0.001, t + dur * 0.25);
         o3.connect(g3).connect(masterGain);
         o3.start(t);
@@ -306,12 +306,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startMusic() {
         initAudio();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
         playing = true;
-        scheduleMelody();
         musicBtn.classList.add('playing');
         iconPlay.style.display = 'none';
         iconPause.style.display = '';
+
+        const go = () => {
+            if (playing) scheduleMelody();
+        };
+
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().then(go);
+        } else {
+            go();
+        }
     }
 
     function stopMusic() {
